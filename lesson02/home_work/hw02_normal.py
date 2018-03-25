@@ -43,9 +43,24 @@ print(len(random_list))
 # Задача-4: Дан список, заполненный произвольными целыми числами.
 # Получите новый список, элементами которого будут: 
 # а) неповторяющиеся элементы исходного списка:
-# например, lst = [1, 2, 4, 5, 6, 2, 5, 2], нужно получить lst2 = [1, 2, 4, 5, 6]
+# например, lst = [6, 2,1, 2, 4, 5,  5, 2], нужно получить lst2 = [1, 2, 4, 5, 6]
 # б) элементы исходного списка, которые не имеют повторений:
 # например, lst = [1 , 2, 4, 5, 6, 2, 5, 2], нужно получить lst2 = [1, 4, 6]
 #a
 lst2 = list(set(random_list))
+lst_example = [6, 2, 1, 2, 4, 5,  5, 2]
+lst_example2 = list(set(lst_example))
 print(lst2)
+print(lst_example2)
+#b
+
+not_repeated_items = []
+lstb = [1 , 2, 4, 5, 6, 2, 5, 2]
+lstb.sort()
+print(lstb)
+for i in range(len(lstb)):
+    if lstb[i] != lstb[i+1]:
+        not_repeated_items.append(lstb[i])
+        print('Task 4b', not_repeated_items)
+
+
