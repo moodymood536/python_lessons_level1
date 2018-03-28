@@ -10,28 +10,30 @@
 # 2.  банан
 # 3.   киви
 # 4.  арбуз
-
+print('{:=^30} '.format('Task 1'))
 # Подсказка: воспользоваться методом .format()
 fruits = ['apple', 'avocado', 'apricot', 'banana', 'date']
 for i in range(len(fruits)):
-    print('{}{:.>20}'.format(i+1, fruits[i]))
+    print('{}{:.>30}'.format(i+1, fruits[i]))
+#try 2
+print( '{:*^30} '.format('Task 1 try 2'))
+for k, fruit in enumerate(fruits):
+    print('{}{:.>30}'.format(k+1, fruit))
 # Задача-2:
 # Даны два произвольные списка.
 # Удалите из первого списка элементы, присутствующие во втором списке.
-
+print('{:=^30} '.format('Task 2'))
 fruits = [12345, 6789, 'apple', 'avocado', 'apricot', 'banana', 'date', 'apple']
 fruits_2 = [12345, '6789', 'apple', 'avocadddo', 'apdddricot', 'bdddanana', 'date']
 for item in fruits_2:
     if item in fruits:
         fruits.remove(item)
 print(fruits)
-
-
 # Задача-3:
 # Дан произвольный список из целых чисел.
 # Получите НОВЫЙ список из элементов исходного, выполнив следующие условия:
 # если элемент кратен двум, то разделить его на 4, если не кратен, то умножить на два.
-
+print('{:=^30} '.format('Task 3'))
 task_3_list = [4, 6, 8, 9, 1, 3, 7]
 new_task_3_list = []
 for i in range(len(task_3_list)):
