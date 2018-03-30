@@ -13,12 +13,13 @@
 print('{:=^30} '.format('Task 1'))
 # Подсказка: воспользоваться методом .format()
 fruits = ['apple', 'avocado', 'apricot', 'banana', 'date']
+max_items_len = len(max(fruits, key=len))
 for i in range(len(fruits)):
-    print('{}{:.>30}'.format(i+1, fruits[i]))
+    print('{} {:.>{}}'.format(i+1, fruits[i], max_items_len))
 #try 2
 print( '{:*^30} '.format('Task 1 try 2'))
 for k, fruit in enumerate(fruits):
-    print('{}{:.>30}'.format(k+1, fruit))
+    print('{} {:.>{}}'.format(k+1, fruit, max_items_len))
 # Задача-2:
 # Даны два произвольные списка.
 # Удалите из первого списка элементы, присутствующие во втором списке.

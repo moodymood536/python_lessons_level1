@@ -2,16 +2,15 @@
 # Определить координату y точки с заданной координатой x.
 print( '{:=^30} '.format('Task 1'))
 equation = 'y = -12x + 11111140.2121'
+equation_items = equation.split()[2:]
+print(equation_items)
 x=2.5
-equal = equation.find('=')
 variable_y = equation[0]
-plus = equation.find('+')
-number_to_multiple = float(equation[equal+1:plus-2])
-number_to_plus = float(equation[plus+1:])
+number_to_multiple = float(equation_items[0][:-1])
+number_to_plus = float(equation_items[2])
 equation = number_to_multiple * x + number_to_plus
-print(type(number_to_multiple), type(number_to_plus), type(variable_y), type(x))
 # вычислите и выведите y
-print("{} = {}".format(variable_y, equation))
+print(f"{variable_y} = {equation}")
 
 print( '{:=^30} '.format('Task 2'))
 # Задание-2: Дата задана в виде строки формата 'dd.mm.yyyy'.
@@ -26,7 +25,7 @@ print( '{:=^30} '.format('Task 2'))
 
 import re
 #regexps
-regex_day_check = re.compile(r'[0-2][0-9]|3[0-1]')
+regex_day_check = re.compile(r'[1-9]|[1-2][0-9]|3[0-1]')
 regex_month_check = re.compile(r'0[0-9]|1[0-2]')
 regex_year_check = re.compile(r'\d{1,4}')
 # date_sting = '11.12.2043'
@@ -36,23 +35,27 @@ regex_year_check = re.compile(r'\d{1,4}')
 # print(month)
 # year = date_sting[6:]
 # print(year)
-dates = ['01.11.1985', '01.22.1001', '1.12.1001', '-2.10.2001', '01.11.1']
+months = {
+    # month: days count
+    1: 31, 2: 30, 3: 31, 4: 30, 5: 31, 6: 30,
+    7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31,
+}
+dates = ['1.11.1985', '1.22.1001', '1.12.1001', '-2.10.2001', '1.11.1', '31.09.1001']
 for date_sting in dates:
-    # print(date_sting)
-    day = date_sting[:2]
-    # print(day)
-    month = date_sting[3:5]
-    # print(month)
-    year = date_sting[6:]
-    # print(len(date_sting))
+    day, month, year = date_sting.split('.')
+    print(day, month, year)
+    # print(f'Month: {month}, Days in month: {months[month]}')
+    # print(day, month, year)
     if 7 < len(date_sting) > 10:
-        print("{} Wrong date format, sybols count wrong".format(date_sting))
-    elif not regex_day_check.match(day):
-        print('{} is not valid day format'.format(day))
+        print(f'{date_sting} Wrong date format, sybols count wrong')
     elif not regex_month_check.match(month):
-        print('{} is not valid month format'.format(month))
+        print(f'{month} is not valid month format')
+    elif not regex_day_check.match(day):
+        print(f'{day} is not valid day format')
+    elif int(day) > months[int(month)]:
+        print (f'Given {day} days, but in this month #{month} should be less days - {months[int(month)]}')
     elif not regex_year_check.match(year):
-        print('{} is not valid year format'.format(year))
+        print(f'{year} is not valid year format')
     else:
         print('{} date is ok'.format(date_sting))
 print( '{:=^30} '.format('Task 3'))
@@ -86,3 +89,30 @@ print( '{:=^30} '.format('Task 3'))
 #
 # Вход: 11
 # Выход: 5 3
+room = 13
+if room > 0 and room <=  2000000000:
+    loop_index = 1
+    floor_index = 1
+    room_index = 1
+
+    #start global loop
+    while room_index <= room:
+        print('----------')
+        #generate floors
+        for _ in range(loop_index):
+            new_floor = []
+            #generate rooms
+            for x in range(loop_index):
+                new_floor.append(room_index)
+                room_index+=1
+            #show floor content
+            print(f'Floor #{floor_index}, contains {loop_index} rooms: {new_floor}')
+            #check rooms exist
+            if room in new_floor:
+                room_position = new_floor.index(room)+1
+                print(f'Room #{room} was founded on #{floor_index} floor at {room_position} position')
+                break
+            floor_index+=1
+        loop_index+=1
+else:
+    print('invalid room number')
