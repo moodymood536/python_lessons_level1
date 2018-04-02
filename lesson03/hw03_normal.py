@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Задание-1:
 # Напишите функцию, возвращающую ряд Фибоначчи с n-элемента до m-элемента.
 # Первыми элементами ряда считать цифры 1 1
@@ -52,7 +53,7 @@ sort_to_max([2, 10, -12, 2.5, 20, -11, 4, 4, 0])
 def my_filter(func, list):
     filtered_list = []
     for i in list:
-        if func(i) is True:
+        if func(i):
             filtered_list.append(i)
     return filtered_list
 mixed = ['мак', 'просо', 'мак', 'мак', 'просо', 'мак', 'просо', 'просо', 'просо', 'мак']
@@ -61,7 +62,7 @@ print(my_filter(lambda x: x > 5,  [2, 10, -10, 8, 2, 0, 14]))
 print(list(filter(lambda x: x > 5, [2, 10, -10, 8, 2, 0, 14])))
 print(my_filter(len, ['', 'not null', 'bla', '', '10']))
 print(list(filter(len, ['', 'not null', 'bla', '', '10'])))
-print(len(''))
+
 
 # Задача-4:
 # Даны четыре точки А1(х1, у1), А2(x2 ,у2), А3(x3 , у3), А4(х4, у4).
