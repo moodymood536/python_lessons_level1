@@ -25,15 +25,18 @@ print("="*10, 'Задание 2', "="*10)
 
 import re
 days = {'01': 'Первое', '02': 'Второе', '03': 'Третье', '04': 'Четвертое', '05': 'Пятое', '06': 'Шестое', '07': 'Седьмое', '08': 'Восьмое', '09': 'Девятое', '10': 'Десятое', '11': 'Одиннадцатое', '12': 'Двенадцатое', '12': 'Тринадцатое', '14': 'Четырнадцатое' }
-month = {'01': 'Января', '02': 'Февраля', '03': 'Марта', '04': 'Апреля', '05': 'Мая', '06': 'Июня', '07': 'Июля', '11': 'Ноября',}
+monthes = {'01': 'Января', '02': 'Февраля', '03': 'Марта', '04': 'Апреля', '05': 'Мая', '06': 'Июня', '07': 'Июля', '11': 'Ноября',}
 date_regexp = re.compile(r'[0-3][0-9]\.0[0-9]\.\d{4}|[0-3][0-9]\.1[1-2]\.\d{4}')
 # date_regexp = re.compile(r'[0-3][0-9]\.0[0-9]\.\d{4}|[0-3][0-9]\.1[1-2]\.\d{4}')
-date = "02.11.2013, 05.03.2025,, dsdfsdfdsf, 436y5fgs, 09.08.3695, 26.39.2568"
+date = "02.11.2012, 05.03.2025,, dsdfsdfdsf, 436y5fgs, 09.08.3695, 26.39.2568"
 find_date = date_regexp.findall(date)
 result = date_regexp.findall(date)
 print('Найденные даты: ',result)
 for i in range(len(result)):
-    print(days.get(result[i][:2]), month.get(result[i][3:5]), result[i][6:10], 'года')
+    # Делим каждую строку списка по точкам и заносим результаты в переменные
+    day, month, year = result[i].split('.')
+    print(day, month, year)
+    print(days.get(day), monthes.get(month), year, 'года')
 print("="*10, 'Задание 3', "="*10)
 # Задача-3: Напишите алгоритм, заполняющий список произвольными целыми числами
 # в диапазоне от -100 до 100. В списке должно быть n - элементов.
@@ -66,7 +69,7 @@ lstb_not_repeated = []
 for i in lstb:
     print("number of {} = {}".format(i, lstb.count(i)))
     if lstb.count(i) == 1:
-        print('{} is only in the list, we will add it'.format(i))
+        print(f'{i} is only in the list, we will add it')
         lstb_not_repeated.append(i)
         print(lstb_not_repeated)
 print(lstb_not_repeated)
