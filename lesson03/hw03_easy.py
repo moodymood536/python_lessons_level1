@@ -51,7 +51,8 @@ def lucky_ticket(ticket_number):
         ticket_list = []
         for i in new_ticket_number:
             ticket_list.append(int(i))
-        if sum(ticket_list[:4]) == sum(ticket_list[4:]):
+
+        if sum(ticket_list[:3]) == sum(ticket_list[3:]):
             return True
         else:
             return False
@@ -59,7 +60,7 @@ def lucky_ticket(ticket_number):
         ticket_list = []
         for i in str(ticket_number):
             ticket_list.append(int(i))
-        if sum(ticket_list[:4]) == sum(ticket_list[4:]):
+        if sum(ticket_list[:3]) == sum(ticket_list[3:]):
             return True
         else:
             return False
@@ -68,3 +69,7 @@ print(lucky_ticket(123006))
 print(lucky_ticket(12321))
 print(lucky_ticket(436751))
 print(lucky_ticket(0))
+
+
+# print(list(map(sum, [1, 2, 3, 0, 0, 6])))
+# print(sum([1, 2, 3, 0, 0, 6]))

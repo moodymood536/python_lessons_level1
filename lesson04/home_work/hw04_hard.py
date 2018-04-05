@@ -1,9 +1,16 @@
 # Задание-1:
 # Матрицы в питоне реализуются в виде вложенных списков:
 # Пример. Дано:
+# matrix = [[1, 0, 8],
+#           [3, 4, 1],
+#           [0, 4, 2]]
+# matrix_new = [matrix[j][i] for i,key in enumerate(matrix) for j, value in enumerate(key)]
+# print(matrix_new)
 matrix = [[1, 0, 8],
           [3, 4, 1],
           [0, 4, 2]]
+matrix_new = [[matrix[j][i] for j,key in enumerate(matrix)] for i, value in enumerate(matrix)]
+print(matrix_new)
           
 # Выполнить поворот (транспонирование) матрицы
 # Пример. Результат:

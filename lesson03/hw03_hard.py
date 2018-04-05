@@ -17,7 +17,19 @@
 # то их ЗП уменьшается пропорционально, а за заждый час переработки
 # они получают удвоенную ЗП, пропорциональную норме.
 # Кол-во часов, которые были отработаны, указаны в файле "data/hours_of"
+with open('data/workers') as w:
+	workers = w.read().split()
+# print(workers)
 
+with open('data/hours_of') as h:
+	hours = h.read().split()
+# print(hours)
+hours_norm = []
+hours_reality = []
+for i in range(5, len(workers)):
+    print(workers[i])
+for j in range(5, len(hours)):
+    print(hours[j])
 
 # Задание-3:
 # Дан файл ("data/fruits") со списком фруктов.
