@@ -42,7 +42,12 @@ def rm():
             print('NO')
             return False
         else:
-            dir_path = os.path.join(os.getcwd(), dir_name)
+            if os.path.isabs(dir_name):
+                dir_path = dir_name
+                print('abs path')
+            else:
+                dir_path = os.path.join(os.getcwd(), dir_name)
+                print('not_abs path')
             try:
                 os.remove(dir_path)
                 print(f'Файл {dir_path} удален')
@@ -55,19 +60,30 @@ def cd():
     if not dir_name:
         print("Необходимо указать имя директории, куда переходим")
         return False
-    prev_dir = os.getcwd()
-    dir_path = os.path.join(os.getcwd(), dir_name)
-    try:
-        os.chdir(dir_path)
-        print(f'Рабочая дирректория изменилась с {prev_dir} \nна {os.getcwd()}')
-    except FileNotFoundError:
-        print(f'Директория {dir_name} не существует')
+    else:
+        prev_dir = os.getcwd()
+        if os.path.isabs(dir_name):
+            dir_path = dir_name
+            print('abs path')
+        else:
+            dir_path = os.path.join(os.getcwd(), dir_name)
+            print('not_abs path')
+        try:
+            os.chdir(dir_path)
+            print(f'Рабочая дирректория изменилась с {prev_dir} \nна {os.getcwd()}')
+        except FileNotFoundError:
+            print(f'Директория {dir_name} не существует')
 
 def make_dir():
     if not dir_name:
         print("Необходимо указать имя директории вторым параметром")
         return
-    dir_path = os.path.join(os.getcwd(), dir_name)
+    if os.path.isabs(dir_name):
+        dir_path = dir_name
+        print('abs path')
+    else:
+        dir_path = os.path.join(os.getcwd(), dir_name)
+        print('not_abs path')
     try:
         os.mkdir(dir_path)
         print('директория {} создана'.format(dir_name))
@@ -78,7 +94,12 @@ def cp():
     if not dir_name:
         print("Необходимо указать имя файла вторым параметром")
         return
-    file_path = os.path.join(os.getcwd(), dir_name)
+    if os.path.isabs(dir_name):
+        file_path = dir_name
+        print('abs path')
+    else:
+        file_path = os.path.join(os.getcwd(), dir_name)
+        print('not_abs path')
     print(file_path)
     shutil.copy(file_path, file_path + '.copy')
     print('Копия файла создана')
