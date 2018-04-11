@@ -26,6 +26,9 @@ class Student:
         self.mother = mother
         self.father = father
         self.education = education
+    def all_teachers(self, class_room):
+        if class_room == self.class_room:
+            return self.teacher
     def name_surname(self):
         return f'{self.name} {self.surname}'
     def student_info(self,student_name):
@@ -33,13 +36,39 @@ class Student:
             return f'Учитель {self.teacher} не может преподавать у {self.class_room}'
         else:
             return f'{student_name} {self.class_room} {self.teacher} {self.education}'
-    def parents_name(self, name):
-        return f'{self.mother}'
+    def parents_name(self):
+        return f'{self.mother} и {self.father}'
 
 
-student_list = [Student("Александр", "Иванов", '10.11.1998', "8 гимназия", "5А", "Иванов", "Мамс", "Папс", "Физра, ИЗО"), Student("Петр", "Сидоров", '10.01.1995', "8 гимназия", "8Б", "Учитель", "Маааммм", "Пааапппп", "Физика, математика")]
+def list_teachers_by_class(class_number):
+    teachers_list = []
+    for student in student_list:
+        temp = student.all_teachers(class_number)
+        if temp and temp not in teachers_list:
+            teachers_list.append(temp)
+    print(f'В классе {class_number} работают следующие учителя {" ".join(teachers_list)}')
+
+
+student_list = [Student("Александр", "Иванов", '10.11.1998', "8 гимназия", "5А", "Иванов", "Мамс", "Папс", "Физра, ИЗО"),
+                Student("Петр", "Сидоров", '10.01.1995', "8 гимназия", "8Б", "Учитель", "Маааммм", "Пааапппп", "Физика, математика"),
+                Student("Александр", "Петров", '10.11.1998', "8 гимназия", "5А", "Иванов", "Мамс", "Папс","Физра, ИЗО"),
+                Student("Петр", "Сидоров", '10.01.1995', "8 гимназия", "8Б", "МУчитель", "Маааммм", "Пааапппп",
+                        "Физика, математика")]
+all_class = []
+all_students = []
 for student in student_list:
-    print(student.name_surname())
+    if student.class_room not in all_class:
+        all_class.append(student.class_room)
+    all_students.append(student.name_surname())
+print(f'Все ученики школы {all_students},\nвсе классы школы {all_class}')
+
 for student in student_list:
     print(student.student_info(student.name_surname()))
 print(student_list[0].parents_name())
+
+list_teachers_by_class("8Б")
+list_teachers_by_class("5А")
+
+# teachers_list = []
+# for student in student_list:
+#     if student.class_room() == '5А' or student.class_room() == ''

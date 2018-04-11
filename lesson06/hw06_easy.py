@@ -42,10 +42,6 @@ class trapeze():
     b = ''
     c = ''
     d = ''
-    AB =''
-    BC = ''
-    DC = ''
-    DA = ''
     def sides(self):
         AB = math.sqrt((self.b['x'] - self.a['x']) ** 2 + (self.b['y'] - self.a['y']) ** 2)
         BC = math.sqrt((self.c['x'] - self.b['x']) ** 2 + (self.c['y'] - self.b['y']) ** 2)
