@@ -1,25 +1,112 @@
 #!/usr/bin/python3
 import random
-class Cards:
-    line_1 = '' # :lst
-    @staticmethod
-    def cards_generator():
-        choice_list = [x for x in range(1,91)]
-        return_value = []
-        for i in range(3):
-            five_numbers = random.sample(list(choice_list), 5)
-            choice_list = set(choice_list)-set(five_numbers)
-            line_1 = list(five_numbers) + [' ']*(9 - len(five_numbers))
-            random.shuffle(line_1)
-            return_value.append(line_1)
-        return f'''{' '.join(str(x) for x in return_value[0])}\n{' '.join(str(x) for x in return_value[1])}\n{' '.join(str(x) for x in return_value[2])}'''
+from collections import Counter
+
+class Ticket:
+    def cards_generator(self):
+        card = []
+        choice_list = [x for x in range (1, 91)]
+        for i in range (3):
+            five_numbers = random.sample (list (choice_list), 5)
+            choice_list = set (choice_list) - set (five_numbers)
+            line_1 = list (five_numbers) + [' '] * (9 - len (five_numbers))
+            random.shuffle (line_1)
+            card.append (line_1)
+        return card
+
+    def __init__(self):
+        self.numbers = self.cards_generator ()
 
     def __str__(self):
-        return f'{self.line_1}'
+        ticket_str = ""
+        for i in range (3):
+            ticket_str += str (self.numbers[i]) + "\n"
+        return ticket_str
 
-        pass
-users_card = Cards()
-print(users_card.cards_generator())
+    def cross(self, r_item):
+        print ("R item is: " + str (r_item))
+        for i in range (len (self.numbers)):
+            for j in range (len (self.numbers[i])):
+                # print(self.numbers[i][j])
+                if str (self.numbers[i][j]) == str (r_item):
+                    self.numbers[i][j] = '-'
+                    return self.numbers
+
+    def has_number(self, r_item):
+        for i in range (len (self.numbers)):
+            for j in range (len (self.numbers[i])):
+                # print(self.numbers[i][j])
+                if str (self.numbers[i][j]) == str (r_item):
+                    return True
+        else:
+            return False
+
+    def skip(self, r_item):
+        for i in range (len (self.numbers)):
+            for j in range (len (self.numbers[i])):
+                # print(self.numbers[i][j])
+                if str (self.numbers[i][j]) == str (r_item):
+                    return False
+        else:
+            return True
+
+    def check_winner(self):
+        count = 0
+        for i in self.numbers:
+            counter = Counter(i)
+            count += counter['-']
+            if count == 15:
+                return True
+
+class Player (Ticket):
+
+    def cross(self, cross_num):
+        self.ticket.cross (cross_num)
+        return str (self.ticket)
+
+    def __init__(self):
+        self.ticket = Ticket ()
+        # self.is_person = is_person
+
+    def __str__(self):
+        return 'Tiket is ' + str (self.ticket)
+
+user = Player()
+print ('Карточка игрока', '\n', str (user.ticket))
+computer = Player()
+print ('Карточка компьютера', '\n', computer.ticket)
+cross_list = [str(x) for x in range(1, 91)]
+while True:
+    cross = random.choice(cross_list)
+    print(cross)
+    cross_list.remove (cross)
+    answer = input ('Do you have this number? y/n: ')
+    if answer == 'y':
+        if user.ticket.has_number(cross) is True:
+            print ('Карточка игрока', '\n', user.cross(cross))
+            is_user_winner = user.ticket.check_winner()
+            if is_user_winner is True:
+                print (f'user is winner')
+                break
+        else:
+            print (f'Ты проиграл')
+            break
+    elif answer == 'n':
+        if user.ticket.skip (cross) is True:
+            print ('Карточка игрока', '\n', str (user.ticket))
+        else:
+            print (f'Ты проиграл')
+            break
+    if computer.ticket.has_number (cross) is True:
+        print ('Карточка компьютера', '\n', computer.cross (cross))
+        is_computer_winner = computer.ticket.check_winner ()
+        if is_computer_winner is True:
+            print(f'computer is winner')
+            break
+    else:
+        computer.ticket.skip (cross)
+        print ('Карточка компьютера', '\n', str (computer.ticket))
+
 """
 == Лото ==
 
