@@ -356,10 +356,11 @@ class WorkerThread(Thread):
             return
         if not re.findall(r'%s'%self.regexp,page):
             opend.append(nexturl)
-            print(" [f] Открылся: "+nexturl)
+            print(colored("[f] Открылся: "+nexturl, "red"))
     elif nextproto in ['newcamd525','mgcamd525']:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if not sock.connect_ex((domain, int(port))):opend.append(nextproto+"://"+nexturl)
+        if not sock.connect_ex((domain, int(port))):
+            opend.append(nextproto+"://"+nexturl)
     else:
         print("Unknown proto: "+nextproto)
         return False
@@ -380,8 +381,8 @@ def getdomain(url, proto):
     return [res[0], '80']
 
 
-# test_dns()
-# test_dpi()
+test_dns()
+test_dpi()
 input("Нажмите Enter чтобы продолжить...")
 
 if f=='':
@@ -400,7 +401,6 @@ opend=[]
 
 url_list = []
 type_ip_list = []
-# type_ip_summary = []
 
 if f!='':
     f = open(f,'r')
@@ -419,6 +419,7 @@ if f!='':
         url_list.append([proto]+[url]+[True])
     f.close()
 else:
+    print(colored("[ok] Начали разбирать dump.xml", "green"))
     dump = ET.parse('dump.xml')
     root = dump.getroot()
     for content in root:
@@ -429,10 +430,12 @@ else:
         ips_c = content.findall('ip')
         subs_c = content.findall('ipSubnet')
         founded_type_ip = content.findall("[@blockType='ip']")
-        if not ips_c and not subs_c and not founded_type_ip:
-            print(colored("Can't find ip or ipSubnet of content with id = " + content.attrib['id'], 'red'))
-            input("Нажмите Enter чтобы выйти...")
-            exit(6)
+        # В выгрузке РКН появились записи без тега <ip>, проверка больше не актуальна
+        # if not ips_c and not subs_c and not founded_type_ip:
+        #     print(ips_c, subs_c, founded_type_ip)
+        #     print(colored("Can't find ip or ipSubnet of content with id = " + content.attrib['id'], 'red'))
+        #     input("Нажмите Enter чтобы выйти...")
+        #     exit(6)
         #searching only type_ip tag
         if founded_type_ip:
             for content in founded_type_ip:
@@ -458,7 +461,6 @@ else:
         for sub in subs_c:
             for ip in IPNetwork(sub.text):
                 ips.append(str(ip))
-
 
         domains = content.findall('domain')
         urls = content.findall('url')
@@ -496,22 +498,24 @@ else:
             check_ip_thread = conn_threads(is_open, ip, 1, 4 )
             check_ip_thread_list.append(check_ip_thread)
             if len(check_ip_thread_list) > 400:
-                # for thread_ip in check_ip_thread_list:
-                #     close_threads(thread_ip)
                 map(close_threads, check_ip_thread_list) # в функцию close threads передаем элементы списка с помощью map
-                print('GC is Working!')
+                print('\nGC is Working!')
                 check_ip_thread_list = []
-                    #try make parallel gc and create new ones
+                #try make parallel gc and create new ones
     except KeyboardInterrupt:
         print("\nCtrl-c! Остановка всех потоков...")
-print('TYPE IP FINISHED')
+print('TYPE IP CHECK FINISHED\n')
 print('Summary brief: ')
-print(colored('''
-[f] Opened ports {},\n
-[f] No rst received {},\n
-[f] Dst unreachable {},\n 
-[ok] Closed ports {}
- ''' ).format(is_port_open.count_opened, is_port_open.count_no_rst,is_port_open.count_dest_unreach, is_port_open.count_closed), 'green')
+print('''
+ {} \n
+ {} \n
+ {} \n 
+ {}
+ '''.format(colored('[f] Opened ports ' + str(is_port_open.count_opened), 'red'), 
+            colored('[f] No rst received ' + str(is_port_open.count_no_rst), 'red'), 
+            colored('[f] Dst unreachable ' + str(is_port_open.count_dest_unreach), 'red'), 
+            colored('[ok] Closed ports ' + str(is_port_open.count_closed), 'green')
+            ))
 print('Details in type_ip_stat.txt')
 
 with open('type_ip_stat.txt', 'w') as f:

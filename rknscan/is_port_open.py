@@ -1,11 +1,12 @@
 #! /usr/bin/python3.6
-# import sys
+# coding: utf-8
 import socket
 import random
 import multiprocessing
 import threading
 import colorama
 from termcolor import colored
+
 statistics = []
 count_opened = 0
 count_closed = 0
@@ -59,7 +60,7 @@ def is_open(ip,start_range=1, end_range=4):
     statistics.append('{:*>60}'.format(''))
 def conn_threads(function, ip,start_range=1, end_range=4):
     threads = []
-    th = threading.Thread(target = function, args = (ip,start_range, end_range))
+    th = threading.Thread(target = function, args = (ip,start_range, end_range), daemon=True)
     th.start()
     threads.append(th)
     return threads
