@@ -12,19 +12,19 @@ count_opened = 0
 count_closed = 0
 count_no_rst = 0
 count_dest_unreach = 0
-def is_open(ip,start_range=1, end_range=4):
+def is_open(ip, end_range=4):
     global count_opened
     global count_closed
     global count_no_rst
-    global count_dest_unreach 
+    global count_dest_unreach
     # Генерируем список из рандомных портов
-    ports = [random.randint(81, 5055) for x in range(start_range,end_range)]
+    ports = [random.randint(81, 5055) for x in range(end_range)]
     # ставим таймаут неответа на первый syn
     socket.setdefaulttimeout(2)
     opened_ports = []
     closed_ports = []
     no_rst = []
-    dest_unreach = []          
+    dest_unreach = []
     for port in ports:
         try:
             conn = socket.socket()
@@ -53,14 +53,15 @@ def is_open(ip,start_range=1, end_range=4):
         no_rst.append(0)
 
     statistics.append('{:*>60}'.format(''))
-    statistics.append(f'Summary of {ip} check:\n') 
-    statistics.append(f'[f]Answered SYN {opened_ports}\n')
-    statistics.append(f'[ok]Closed ports RST recieved {closed_ports}\n')
-    statistics.append(f'[f]Opened ports NO RST {no_rst}\n')
+    statistics.append(f'Summary of {ip} check:\n')
+    statistics.append(f'[f] Answered SYN {opened_ports}\n')
+    statistics.append(f'[f] Dst unreachable {dest_unreach}\n')
+    statistics.append(f'[f] Opened ports NO RST {no_rst}\n')
+    statistics.append(f'[ok] Closed ports RST recieved {closed_ports}\n')
     statistics.append('{:*>60}'.format(''))
-def conn_threads(function, ip,start_range=1, end_range=4):
+def conn_threads(function, ip, end_range=4):
     threads = []
-    th = threading.Thread(target = function, args = (ip,start_range, end_range), daemon=True)
+    th = threading.Thread(target = function, args = (ip, end_range), daemon=True)
     th.start()
     threads.append(th)
     return threads

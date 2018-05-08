@@ -22,12 +22,15 @@ from netaddr import IPNetwork
 from queue import Queue, Empty
 from requests.exceptions import ConnectionError
 import logging
+from color_log import log
 
-FORMAT = '%(asctime)s: %(levelname)s: %(message)s'
+# Logging settings
+# FORMAT = '%(asctime)s: %(levelname)s: %(message)s'
+FORMAT = '%(message)s'
 logging.basicConfig(level=logging.INFO, format=FORMAT)
 logging.getLogger("urllib3").setLevel(logging.WARNING) #turn off urlib logging
 logging.getLogger("requests").setLevel(logging.WARNING)
-
+#turn on coloring on windows
 colorama.init()
 
 parser = OptionParser()
@@ -162,7 +165,7 @@ def _get_a_records(sitelist, timeout, dnsserver=None):
             for item in records:
                 result.append(item)
         except dns.resolver.NXDOMAIN:
-            logging.warning(f"[!] Невозможно получить DNS-запись для домена {site} (NXDOMAIN). Результаты могут быть неточными.")
+            log.warning(f"[!] Невозможно получить DNS-запись для домена {site} (NXDOMAIN). Результаты могут быть неточными.")
         except dns.exception.DNSException:
             return ""
     return sorted(result)
@@ -240,7 +243,7 @@ def _dpi_build_tests(host, urn, ip, lookfor):
     return dpi_built_list
 
 def test_dpi():
-    logging.info("[O] Тестируем обход DPI")
+    log.info("[O] Тестируем обход DPI")
 
     dpiresults = []
     for dpisite in dpi_list:
@@ -248,47 +251,47 @@ def test_dpi():
         dpi_built_tests = _dpi_build_tests(site['host'], site['urn'], site['ip'], site['lookfor'])
         for testname in dpi_built_tests:
             test = dpi_built_tests[testname]
-            logging.info(f"\tПробуем способ \"{testname}\" на {dpisite}")
+            log.info(f"\tПробуем способ \"{testname}\" на {dpisite}")
             try:
                 result = _dpi_send(test.get('ip'), 80, test.get('data'), test.get('fragment_size'), test.get('fragment_count'))
             except Exception as e:
-                logging.info(colored(f"[ok] Ошибка: {repr(e)}",'green'))
+                log.info(f"[ok] Ошибка: {repr(e)}")
             else:
                 if result.split("\n")[0].find('200 ') != -1 and result.find(test['lookfor']) != -1:
-                    logging.warning(colored("[f] Сайт открывается",'red'))
+                    log.warning("[f] Сайт открывается")
                     dpiresults.append(testname)
                 elif result.split("\n")[0].find('200 ') == -1 and result.find(test['lookfor']) != -1:
-                    logging.warning("[!] Сайт не открывается, обнаружен пассивный DPI!")
+                    log.warning("[!] Сайт не открывается, обнаружен пассивный DPI!")
                     dpiresults.append('Passive DPI')
                 else:
-                    logging.info(colored("[ok] Сайт не открывается",'green'))
+                    log.info("[ok] Сайт не открывается")
     return list(set(dpiresults))
 
 def test_dns():
     sites = dns_records_list
     sites_list = list(sites.keys())
-    logging.info("[O] Тестируем DNS")
-    logging.info("[O] Получаем эталонные DNS с сервера")
+    log.info("[O] Тестируем DNS")
+    log.info("[O] Получаем эталонные DNS с сервера")
     try:
         remote_dns = urllib.request.urlopen("http://tac.rdp.ru/pub/getdns.php", timeout=10).read()
         remote_dns = sorted(_decode_bytes(remote_dns).split())
-        logging.info("\tЭталонные адреса:\t\t", str(remote_dns))
+        log.info(f"\tЭталонные адреса:\t\t {str(remote_dns)}")
     except:
         remote_dns = None
-        logging.warning(colored("[f] Не удалось получить DNS с сервера, результаты могут быть неточными",'red'))
+        log.warning("[f] Не удалось получить DNS с сервера, результаты могут быть неточными")
     resolved_default_dns = sorted(_get_a_records(sites_list, timeout))
     if resolved_default_dns:
-        logging.info(f"\tАдреса через системные DNS:\t {str(resolved_default_dns)}")
+        log.info(f"\tАдреса через системные DNS:\t {str(resolved_default_dns)}")
     else:
-        logging.warning("\tНе удалось подключиться к системному DNS")
+        log.warning("\tНе удалось подключиться к системному DNS")
     resolved_google_dns = sorted(_get_a_records(sites_list, timeout, google_dns))
     if resolved_google_dns:
-        logging.info("\tАдреса через Google DNS:\t", str(resolved_google_dns))
+        log.info(f"\tАдреса через Google DNS:\t {str(resolved_google_dns)}")
     else:
         loggint.warning("\tНе удалось подключиться к Google DNS")
 
     if not resolved_google_dns or not resolved_default_dns:
-        logging.critical(colored("Проблема с разрешением DNS на системном, либо google сервере",'red'))
+        log.critical("Проблема с разрешением DNS на системном, либо google сервере")
         input("Нажмите Enter чтобы выйти...")
         exit(1)
 
@@ -299,12 +302,12 @@ def test_dns():
         dns_records = sorted([item for sublist in sites.values() for item in sublist])
     if resolved_default_dns == resolved_google_dns:
         if resolved_default_dns == dns_records:
-            logging.info(colored("[ok] DNS-записи не подменяются",'green'))
+            log.info("[ok] DNS-записи не подменяются")
             return 0
         else:
-            logging.warning(colored("[f] DNS-записи подменяются",'red'))
+            log.warning("[f] DNS-записи подменяются")
             return 2
-    logging.warning("[?] Способ блокировки DNS определить не удалось")
+    log.warning("[?] Способ блокировки DNS определить не удалось")
     return 3
 
 
@@ -364,7 +367,7 @@ class WorkerThread(Thread):
             return
         if not re.findall(r'%s'%self.regexp,page):
             opend.append(nexturl)
-            logging.warning(colored("[f] Открылся: "+nexturl, "red"))
+            log.warning(f"\n[f] Открылся: {nexturl}")
     elif nextproto in ['newcamd525','mgcamd525']:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if not sock.connect_ex((domain, int(port))):
@@ -395,13 +398,13 @@ input("Нажмите Enter чтобы продолжить...")
 
 if f=='':
     if not os.path.isfile('dump.xml'):
-        print(colored("Не могу найти dump.xml в этой директории",'red'))
+        log.warning("Не могу найти dump.xml в этой директории")
         input("Нажмите Enter чтобы выйти...")
         exit(2)
 
 else:
     if not os.path.isfile(f):
-        print(colored("Can't find "+f,'red'))
+        log.warning(f"Can't find {f}")
         input("Нажмите Enter чтобы выйти...")
         exit(3)
 
@@ -415,19 +418,19 @@ if f!='':
     for line in f:
         url = line.strip()
         if not urlregex.match(url):
-            print(colored('wrong url: '+url,'red'))
+            log.warning(f'wrong url: {url}')
             input("Нажмите Enter чтобы выйти...")
             exit(4)
         proto = getproto(url)
         if not proto in ['http','https','newcamd525','mgcamd525']:
-            print(colored("Ошибка определения протокола: "+url,'red'))
+            log.warning(f"Ошибка определения протокола: {url}")
             input("Нажмите Enter чтобы выйти...")
             exit(5)
         urldomain, port = getdomain(url,proto)
         url_list.append([proto]+[url]+[True])
     f.close()
 else:
-    logging.info(colored("[ok] Начали разбирать dump.xml", "green"))
+    log.info("[ok] Начали разбирать dump.xml")
     dump = ET.parse('dump.xml')
     root = dump.getroot()
     for content in root:
@@ -438,12 +441,6 @@ else:
         ips_c = content.findall('ip')
         subs_c = content.findall('ipSubnet')
         founded_type_ip = content.findall("[@blockType='ip']")
-        # В выгрузке РКН появились записи без тега <ip>, проверка больше не актуальна
-        # if not ips_c and not subs_c and not founded_type_ip:
-        #     print(ips_c, subs_c, founded_type_ip)
-        #     print(colored("Can't find ip or ipSubnet of content with id = " + content.attrib['id'], 'red'))
-        #     input("Нажмите Enter чтобы выйти...")
-        #     exit(6)
         #searching only type_ip tag
         if founded_type_ip:
             for content in founded_type_ip:
@@ -456,7 +453,7 @@ else:
                         ips_from_ipS.append(str(ip))
                 for ip in ips:
                     for ip in IPNetwork(ip.text):
-                        ips_from_ip.append(str(ip))        
+                        ips_from_ip.append(str(ip))
                 if ips_from_ip:
                     type_ip_list.append(choice(ips_from_ip))
                     type_ip_list.append(choice(ips_from_ip))
@@ -491,7 +488,7 @@ else:
                     url_list.append(['https',"https://" + ip]+[False])
 total = len(url_list)
 
-logging.info("[O] Количество URL(type-ip) для проверки: " + str(len(type_ip_list)))
+log.info("[O] Количество URL(type-ip) для проверки: " + str(len(type_ip_list)))
 input("Нажмите Enter чтобы перейти к проверке...")
 if not type_ip_list:
     print("Nothing to do")
@@ -506,40 +503,40 @@ else:
             check_ip_thread_list.append(check_ip_thread)
             if len(check_ip_thread_list) > n_ip_threads:
                 map(close_threads, check_ip_thread_list) # в функцию close threads передаем элементы списка с помощью map
-                logging.debug('GC is Working!\n')
+                log.debug('GC is Working!\n')
                 check_ip_thread_list = []
                 time.sleep(3) # helps to fix crash at windows
                 #try make parallel gc and create new ones
     except KeyboardInterrupt:
-        logging.critical("\nCtrl-c! Остановка всех потоков...")
+        log.critical("\nCtrl-c! Остановка всех потоков...")
         exit(1)
 
-logging.info('TYPE IP CHECK FINISHED\n')
-# logging.info('Summary brief: ')
-logging.info('''Summary brief: 
+log.info('TYPE IP CHECK FINISHED\n')
+# log.info('Summary brief: ')
+log.info('''Summary brief:
  {} \n
  {} \n
- {} \n 
+ {} \n
  {}
- '''.format(colored('[f] Opened ports ' + str(is_port_open.count_opened), 'red'), 
-            colored('[f] No rst received ' + str(is_port_open.count_no_rst), 'red'), 
-            colored('[f] Dst unreachable ' + str(is_port_open.count_dest_unreach), 'red'), 
-            colored('[ok] Closed ports ' + str(is_port_open.count_closed), 'green')
+ '''.format(colored(f'[f] Opened ports {str(is_port_open.count_opened)}', 'red'),
+            colored(f'[f] No rst received {str(is_port_open.count_no_rst)}', 'red'),
+            colored(f'[f] Dst unreachable {str(is_port_open.count_dest_unreach)}', 'red'),
+            colored(f'[ok] Closed ports {str(is_port_open.count_closed)}', 'green')
             ))
-logging.info('Details in type_ip_stat.txt')
+log.info('Details in type_ip_stat.txt')
 
 try:
     with open('type_ip_stat.txt', 'w') as f:
         stats = '\n'.join(statistics)
         f.write(stats)
-except OSError:    
+except OSError:
     with open('type_ip_stat.txt.new', 'w') as f:
             stats = '\n'.join(statistics)
             f.write(stats)
 
-logging.info("[O] Количество URL для проверки: " + str(total))
+log.info("[O] Количество URL для проверки: " + str(total))
 if total==0:
-    logging.critical("Nothing to do")
+    log.critical("Nothing to do")
     input("Нажмите Enter чтобы выйти...")
     exit(0)
 
@@ -555,7 +552,7 @@ while len(workerthreadlist) > 0:
     try:
         workerthreadlist = [t.join(1) for t in workerthreadlist if t is not None and t.isAlive()]
     except KeyboardInterrupt:
-        logging.warning(colored("\nCtrl-c! Остановка всех потоков...", "red"))
+        log.warning("\nCtrl-c! Остановка всех потоков...")
         for t in workerthreadlist:
             t.kill_received = True
         exit(0)
@@ -563,9 +560,9 @@ while len(workerthreadlist) > 0:
 print()
 perc = len(opend)*100/total
 print(colored("[f]",'cyan'), end="") if perc else print(colored("[ok]",'cyan'),end="")
-print (colored(" Процент открывшихся сайтов: "+str(perc)+"%",'cyan'))
+print (colored(f" Процент открывшихся сайтов: {str(perc)}%", 'cyan'))
 if perc:
-    logging.warning(colored("[f] Открывшиеся сайты:",'red'))
+    log.warning("[f] Открывшиеся сайты:")
     for url in opend:
-        logging.warning(colored("\t[f] "+url,'red'))
+        log.warning(f"\t[f] {url}")
     input("Нажмите Enter чтобы выйти...")

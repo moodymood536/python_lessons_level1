@@ -1,7 +1,8 @@
 import logging
 from termcolor import colored
+import colorama
 
-
+colorama.init()
 class ColorLog(object):
 
     colormap = dict(
@@ -31,8 +32,3 @@ if __name__ == '__main__':
     stdout = logging.StreamHandler()
     stdout.setLevel(logging.DEBUG)
     log.addHandler(stdout)
-
-    log.debug("booooring . . .")
-    log.info("pleasing anecdote")
-    log.warn("awkward utterance")
-    log.error("drunken rudeness")
